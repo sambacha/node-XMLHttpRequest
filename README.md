@@ -1,6 +1,6 @@
 > Synchronous and asynchronous XMLHttpRequest for Node
 
-[![Build Status: Linux](https://travis-ci.org/Mogztter/unxhr.svg?branch=master)](https://travis-ci.org/Mogztter/unxhr)
+[![Build](https://github.com/Mogztter/unxhr/workflows/Build/badge.svg)](https://github.com/Mogztter/unxhr/actions?query=workflow%3ABuild)
 [![install size](https://packagephobia.now.sh/badge?p=unxhr)](https://packagephobia.now.sh/result?p=unxhr)
 [![npm version](https://img.shields.io/npm/v/unxhr)](https://www.npmjs.com/package/unxhr)
 
