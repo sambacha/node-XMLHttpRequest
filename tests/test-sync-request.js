@@ -1,3 +1,4 @@
+const ospath = require('path')
 const childProcess = require('child_process')
 const fs = require('fs')
 const chai = require('chai')
@@ -7,8 +8,9 @@ const expect = chai.expect
 const XMLHttpRequest = require('../lib/XMLHttpRequest').XMLHttpRequest
 
 describe('XMLHttpRequest sync request', () => {
+  const serverScriptPath = ospath.join(__dirname, 'server.js')
   it('should get resource synchronously', async () => {
-    const child = childProcess.fork(`${__dirname}/server.js`)
+    const child = childProcess.fork(serverScriptPath)
     try {
       let data = ''
       await new Promise((resolve) => {
@@ -34,7 +36,7 @@ describe('XMLHttpRequest sync request', () => {
     }
   })
   it('should get image synchronously', async () => {
-    const child = childProcess.fork(`${__dirname}/server.js`)
+    const child = childProcess.fork(serverScriptPath)
     try {
       let arrayBuffer = ''
       await new Promise((resolve) => {
@@ -56,13 +58,13 @@ describe('XMLHttpRequest sync request', () => {
           }
         })
       })
-      expect(fs.readFileSync(`${__dirname}/cat.png`).compare(arrayBuffer)).to.equal(0)
+      expect(fs.readFileSync(ospath.join(__dirname, 'cat.png')).compare(arrayBuffer)).to.equal(0)
     } finally {
       child.kill()
     }
   })
   it('should post data synchronously', async () => {
-    const child = childProcess.fork(`${__dirname}/server.js`)
+    const child = childProcess.fork(serverScriptPath)
     try {
       let responseText = ''
       await new Promise((resolve) => {
@@ -88,7 +90,7 @@ describe('XMLHttpRequest sync request', () => {
     }
   })
   it('should post json data synchronously (with correct content-length)', async () => {
-    const child = childProcess.fork(`${__dirname}/server.js`)
+    const child = childProcess.fork(serverScriptPath)
     try {
       let responseText = ''
       await new Promise((resolve) => {

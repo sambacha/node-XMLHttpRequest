@@ -1,6 +1,7 @@
 const getPort = require('get-port')
 const http = require('http')
 const fs = require('fs')
+const ospath = require('path')
 
 ;(async () => {
   const port = await getPort()
@@ -23,7 +24,7 @@ const fs = require('fs')
         res.end(data)
       })
     } else if (req.url === '/cat.png') {
-      const buffer = fs.readFileSync(`${__dirname}/cat.png`)
+      const buffer = fs.readFileSync(ospath.join(__dirname, 'cat.png'))
       res.writeHead(200, {
         'Content-Type': 'image/png',
         'Content-Length': buffer.byteLength
