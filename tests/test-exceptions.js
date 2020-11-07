@@ -1,7 +1,9 @@
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
+const os = require('os')
 chai.use(dirtyChai)
 const expect = chai.expect
+const osplatform = os.platform()
 const XMLHttpRequest = require('../lib/XMLHttpRequest').XMLHttpRequest
 const xhr = new XMLHttpRequest()
 
@@ -53,6 +55,39 @@ describe('XMLHttpRequest exceptions', () => {
     xhr.setRequestHeader('X-Foobar', 'Test')
     expect(xhr.getRequestHeader('X-Foobar')).to.equal('Test')
   })
+  // Windows has a "long" timeout (> 2s) on DNS resolution
+  if (osplatform !== 'win32') {
+    it('should throw an exception on DNS resolution failure (sync)', () => {
+      const url = 'http://nodns/'
+      expect(() => {
+        const xhr = new XMLHttpRequest()
+        xhr.open('GET', url, false)
+        xhr.send()
+      }).to.throw('Failed to execute \'send\' on \'XMLHttpRequest\': Failed to load \'http://nodns/\'.')
+    })
+    it('should throw an exception on DNS resolution failure (async)', async () => {
+      const url = 'http://nodns/'
+      const xhr = new XMLHttpRequest()
+      try {
+        await new Promise((resolve, reject) => {
+          xhr.open('GET', url, true)
+          xhr.onload = function () {
+            if (xhr.readyState === 4) {
+              resolve({})
+            }
+          }
+          xhr.onerror = function () {
+            // responseText and response should be empty
+            reject(new Error('Error while executing the query'))
+          }
+          xhr.send()
+        })
+        expect.fail('should throw an exception on DNS resolution failure')
+      } catch (err) {
+        expect(err.message).to.equal('Error while executing the query')
+      }
+    })
+  }
 })
 
 /*
