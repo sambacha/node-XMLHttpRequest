@@ -59,11 +59,14 @@ describe('XMLHttpRequest exceptions', () => {
   if (osplatform !== 'win32') {
     it('should throw an exception on DNS resolution failure (sync)', () => {
       const url = 'http://nodns/'
-      expect(() => {
+      try {
         const xhr = new XMLHttpRequest()
         xhr.open('GET', url, false)
         xhr.send()
-      }).to.throw('Failed to execute \'send\' on \'XMLHttpRequest\': Failed to load \'http://nodns/\'.')
+        expect.fail('Request should not succeed!')
+      } catch (err) {
+        expect(err.message).to.equal('Failed to execute \'send\' on \'XMLHttpRequest\': Failed to load \'http://nodns/\'.')
+      }
     })
     it('should throw an exception on DNS resolution failure (async)', async () => {
       const url = 'http://nodns/'
@@ -76,15 +79,14 @@ describe('XMLHttpRequest exceptions', () => {
               resolve({})
             }
           }
-          xhr.onerror = function () {
-            // responseText and response should be empty
-            reject(new Error('Error while executing the query'))
+          xhr.onerror = function (e) {
+            reject(e.error)
           }
           xhr.send()
         })
-        expect.fail('should throw an exception on DNS resolution failure')
+        expect.fail('Request should not succeed!')
       } catch (err) {
-        expect(err.message).to.equal('Error while executing the query')
+        expect(err.message).to.equal('Failed to execute \'send\' on \'XMLHttpRequest\': Failed to load \'http://nodns/\'.')
       }
     })
   }
