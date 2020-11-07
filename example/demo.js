@@ -1,6 +1,6 @@
-var XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
+const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
 
-var xhr = new XMLHttpRequest()
+const xhr = new XMLHttpRequest()
 
 xhr.onreadystatechange = function () {
   console.log('State: ' + this.readyState)
