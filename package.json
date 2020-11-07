@@ -7,11 +7,13 @@
   ],
   "scripts": {
     "test": "mocha tests/test-*.js",
-    "lint": "standard tests/**.js lib/**.js example/**.js"
+    "lint": "standard tests/**.js lib/**.js example/**.js",
+    "lint-fix": "npm run lint -- --fix"
   },
   "authors": [
     "Dan DeFelippi (http://driverdan.com)",
-    "Guillaume Grossetie (https://github.com/mogztter)"
+    "Guillaume Grossetie (https://github.com/mogztter)",
+    "David Jencks (https://gitlab.com/djencks)"
   ],
   "keywords": [
     "xhr",
