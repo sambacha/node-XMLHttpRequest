@@ -39,7 +39,7 @@ const XMLHttpRequest = require('../lib/XMLHttpRequest').XMLHttpRequest
     it('should get image', async () => {
       const child = childProcess.fork(serverScriptPath)
       try {
-        let response = ''
+        let response
         await new Promise((resolve) => {
           child.on('message', message => {
             if (message && message.port) {
