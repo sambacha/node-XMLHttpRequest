@@ -1,11 +1,18 @@
 const getPort = require('get-port')
 const http = require('http')
+const https = require('https')
 const fs = require('fs')
 const ospath = require('path')
 
 ;(async () => {
+  const options = {
+    key: fs.readFileSync('tests/keys/server.key'),
+    cert: fs.readFileSync('tests/keys/server.cert')
+  }
+  const args = process.argv.slice(2)
+  const ssl = args && args[0] === '--ssl'
   const port = await getPort()
-  const server = http.createServer(function (req, res) {
+  const server = (ssl ? https : http).createServer(options, function (req, res) {
     if (req.url === '/length' && req.method === 'POST') {
       res.writeHead(200, {
         'Content-Type': 'text/plain'
