@@ -6,7 +6,7 @@
     "lib"
   ],
   "scripts": {
-    "test": "mocha tests/test-*.js && ts-node node_modules/mocha/lib/cli/cli.js tests/test-*.ts",
+    "test": "mocha tests/test-*.js && ts-node node_modules/mocha/lib/cli/cli.js tests/test-request.js",
     "lint": "standard tests/**.js lib/**.js example/**.js",
     "lint-fix": "npm run lint -- --fix"
   },
@@ -40,9 +40,6 @@
   },
   "main": "./lib/XMLHttpRequest.js",
   "devDependencies": {
-    "@types/chai": "^4.2.14",
-    "@types/dirty-chai": "^2.0.2",
-    "@types/node": "^14.14.14",
     "chai": "4.2.0",
     "dirty-chai": "2.0.1",
     "get-port": "5.1.1",
