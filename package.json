@@ -40,7 +40,7 @@
   },
   "main": "./lib/XMLHttpRequest.js",
   "devDependencies": {
-    "chai": "4.2.0",
+    "chai": "4.3.0",
     "dirty-chai": "2.0.1",
     "get-port": "5.1.1",
     "mocha": "8.2.1",
