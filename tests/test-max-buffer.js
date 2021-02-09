@@ -28,7 +28,7 @@ describe('XMLHttpRequest synchronous request over http', () => {
       })
       // Request should exceed max buffer size!
       // As a result `xhr.send` should throws an exception: spawnSync /bin/sh ENOBUFS
-      expect(result.message).to.equal('spawnSync /bin/sh ENOBUFS')
+      expect(result.message).to.include('ENOBUFS')
     } finally {
       child.kill()
       delete process.env.UNXHR_MAX_BUFFER
