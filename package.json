@@ -43,7 +43,7 @@
     "chai": "4.3.0",
     "dirty-chai": "2.0.1",
     "get-port": "5.1.1",
-    "mocha": "8.2.1",
+    "mocha": "8.3.0",
     "standard": "16.0.3",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3"
