@@ -1,71 +1,82 @@
-var sys = require("util")
-  , assert = require("assert")
-  , http = require("http")
-  , XMLHttpRequest = require("../lib/XMLHttpRequest").XMLHttpRequest
-  , xhr;
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+chai.use(dirtyChai)
+const expect = chai.expect
+const http = require('http')
+const getPort = require('get-port')
+const XMLHttpRequest = require('../lib/XMLHttpRequest').XMLHttpRequest
 
-// Test server
+describe('XMLHttpRequest streaming', () => {
+  it('should wait until the stream is finished', async () => {
+    let bodyLength = 0
 
-function completeResponse(res,server,body) {
-  res.end();
-  assert.equal(onreadystatechange, true);
-  assert.equal(readystatechange, true);
-  assert.equal(removed, true);
-  assert.equal(loadCount, body.length);
-  sys.puts("done");
-  server.close();
-}
-function push(res,piece) {
-  res.write(piece);
-}
-
-var server = http.createServer(function (req, res) {
-  var body = (req.method != "HEAD" ? ["Hello","World","Stream"] : []);
-
-  res.writeHead(200, {
-    "Content-Type": "text/plain",
-    "Content-Length": Buffer.byteLength(body.join(""))
-  });
-  
-  var nextPiece = 0;
-  var self = this;
-  var interval = setInterval(function() {
-    if (nextPiece < body.length) {
-      res.write(body[nextPiece]);
-      nextPiece++;
-    } else {
-      completeResponse(res,self,body);
-      clearInterval(interval);
+    function completeResponse (res, server, body) {
+      res.end()
+      bodyLength = body.length
+      server.close()
     }
-  },100); //nagle may put writes together, if it happens rise the interval time
 
-}).listen(8000);
+    const port = await getPort()
+    const server = http.createServer(function (req, res) {
+      const body = (req.method !== 'HEAD' ? ['Hello', 'World', 'Stream'] : [])
 
-xhr = new XMLHttpRequest();
+      res.writeHead(200, {
+        'Content-Type': 'text/plain',
+        'Content-Length': Buffer.byteLength(body.join(''))
+      })
 
-// Track event calls
-var onreadystatechange = false;
-var readystatechange = false;
-var removed = true;
-var loadCount = 0;
-var removedEvent = function() {
-  removed = false;
-};
+      let nextPiece = 0
+      const self = this
+      const interval = setInterval(function () {
+        if (nextPiece < body.length) {
+          res.write(body[nextPiece])
+          nextPiece++
+        } else {
+          completeResponse(res, self, body)
+          clearInterval(interval)
+        }
+      }, 100) // nagle may put writes together, if it happens rise the interval time
+    }).listen(port)
 
-xhr.onreadystatechange = function() {
-  onreadystatechange = true;
-};
+    const xhr = new XMLHttpRequest()
 
-xhr.addEventListener("readystatechange", function() {
-  readystatechange = true;
-  if (xhr.readyState == xhr.LOADING) {
-    loadCount++;
-  }
-});
+    // Track event calls
+    let onreadystatechange = false
+    let readystatechange = false
+    let removed = true
+    let loadCount = 0
 
-// This isn't perfect, won't guarantee it was added in the first place
-xhr.addEventListener("readystatechange", removedEvent);
-xhr.removeEventListener("readystatechange", removedEvent);
+    const removedEvent = function () {
+      removed = false
+    }
 
-xhr.open("GET", "http://localhost:8000");
-xhr.send();
+    xhr.onreadystatechange = function () {
+      onreadystatechange = true
+    }
+
+    xhr.addEventListener('readystatechange', function () {
+      readystatechange = true
+      if (xhr.readyState === xhr.LOADING) {
+        loadCount++
+      }
+    })
+
+    // This isn't perfect, won't guarantee it was added in the first place
+    xhr.addEventListener('readystatechange', removedEvent)
+    xhr.removeEventListener('readystatechange', removedEvent)
+
+    xhr.open('GET', `http://localhost:${port}`)
+    xhr.send()
+
+    await new Promise((resolve) => {
+      server.on('close', () => {
+        resolve()
+      })
+    })
+
+    expect(onreadystatechange).to.be.true()
+    expect(readystatechange).to.be.true()
+    expect(removed).to.be.true()
+    expect(loadCount).to.equal(bodyLength)
+  })
+})
